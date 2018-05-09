@@ -1,12 +1,22 @@
 package com.android.meterialdesign;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.transition.AutoTransition;
+import android.support.transition.Explode;
+import android.support.transition.Fade;
+import android.support.transition.Slide;
+import android.support.transition.Transition;
+import android.support.transition.TransitionManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,19 +25,22 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    private ConstraintLayout mRoot;
     private SearchView mSearchView;
     private TextView mTextView;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mRoot = findViewById(R.id.root);
         mTextView = findViewById(R.id.textView);
         initToolbar();
     }
 
     private void initToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -52,10 +65,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSearchView() {
-        mSearchView.setQueryHint("好想输入点什么QAQ");
-        //setIconifiedByDefault(boolean iconified) 这个Api主要是控制搜索按钮是否在输入框内部的，
-        // true代表在内部显示，false代表在外部显示
-        mSearchView.setIconifiedByDefault(false);
+        mSearchView.setQueryHint("搜索");
         //修改searchView的文字颜色
         SearchView.SearchAutoComplete mSearchAutoComplete = mSearchView.findViewById(R.id.search_src_text);
         int white = ContextCompat.getColor(this, android.R.color.white);
@@ -117,6 +127,36 @@ public class MainActivity extends AppCompatActivity {
             default:
                 break;
         }
+        Intent intent = new Intent(this, DrawerActivity.class);
+        startActivity(intent);
         return true;
+    }
+
+    public void onClick(View view) {
+        int id = view.getId();
+        Transition transition;
+        switch (id) {
+            case R.id.button1:
+                transition = new AutoTransition();
+                break;
+            case R.id.button2:
+                transition = new Fade();
+                break;
+            case R.id.button3:
+                transition = new Explode();
+                break;
+            case R.id.button4:
+                transition = new Slide(Gravity.BOTTOM);
+                break;
+            default:
+                transition = new AutoTransition();
+                break;
+        }
+        //设置动画时长
+        transition.setDuration(500);
+        //设置插值器
+        transition.setInterpolator(new FastOutSlowInInterpolator());
+        TransitionManager.beginDelayedTransition(mRoot, transition);
+        view.setVisibility(View.GONE);
     }
 }
