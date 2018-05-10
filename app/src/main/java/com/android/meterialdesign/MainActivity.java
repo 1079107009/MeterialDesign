@@ -3,6 +3,7 @@ package com.android.meterialdesign;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.transition.AutoTransition;
 import android.support.transition.Explode;
@@ -132,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void onClick(View view) {
+    public void onClick(final View view) {
         int id = view.getId();
         Transition transition;
         switch (id) {
@@ -158,5 +159,11 @@ public class MainActivity extends AppCompatActivity {
         transition.setInterpolator(new FastOutSlowInInterpolator());
         TransitionManager.beginDelayedTransition(mRoot, transition);
         view.setVisibility(View.GONE);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                view.setVisibility(View.VISIBLE);
+            }
+        }, 1000);
     }
 }
