@@ -1,27 +1,29 @@
 package com.android.meterialdesign;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView mRecyclerView;
+    private FloatingActionButton mFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +32,11 @@ public class DrawerActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        mFab = findViewById(R.id.fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
+                startActivity(new Intent(DrawerActivity.this, BehaviorActivity.class));
             }
         });
 
@@ -53,18 +54,31 @@ public class DrawerActivity extends AppCompatActivity
 
     private void initRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        mRecyclerView.setAdapter(new ListAdapter() {
-//            @NonNull
-//            @Override
-//            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//                return null;
-//            }
-//
-//            @Override
-//            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-//
-//            }
-//        });
+        StringAdapter adapter = new StringAdapter();
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            list.add("这是第" + i + "条");
+        }
+        adapter.submitList(list);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && mFab.getVisibility() == View.VISIBLE) {
+                    //向下滑动，并且控件显示
+                    mFab.hide();
+                } else if (dy < 0 && mFab.getVisibility() != View.VISIBLE) {
+                    //向上滑动，并且控件为飞显示
+                    mFab.show();
+                }
+            }
+        });
     }
 
     @Override

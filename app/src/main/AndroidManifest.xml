@@ -19,6 +19,9 @@
         <activity
             android:name=".DrawerActivity"
             android:label="@string/title_activity_drawer" />
+        <activity
+            android:name=".BehaviorActivity"
+            android:label="@string/title_activity_behavior" />
     </application>
 
 </manifest>
